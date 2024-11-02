@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class BackgroundScroll : MonoBehaviour
 {
     public float scrollSpeed = 500f;
-    const float backgroundPositionY = 480f;
+    const float backgroundPositionY = 415f;
     const float backgroundOutPositionX = -720f;
     const float backgroundStartPositionX = 1440f;
 

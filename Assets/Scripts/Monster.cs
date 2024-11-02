@@ -7,9 +7,10 @@ public class Monster : MonoBehaviour
 {
     public float speed;
     // Start is called before the first frame update
+    public int hp = 27;
     void Start()
     {
-        speed = 10f;
+        speed = 30f;
     }
 
     // Update is called once per frame
