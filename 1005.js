@@ -61,35 +61,39 @@ app.get('/login', async (req, res) => {
     }
 });
 
-app.get('/score', async (req, res) => {
+app.post('/score', async (req, res) => {
     try {
-        try {
-            if (!req.query.sessionid) throw 'error';
-        } catch (error) {
-            throw 'invalidate error';            
-        }
+        const { sessionid, cnt } = req.body;
         
-        let userInfo = {};
-        let scoreInfo = {};
-        const sessionId = req.query.sessionid;
+        if (!sessionid || typeof cnt !== 'number') {
+            return res.status(400).json({ error: 'Invalid input' });
+        }
+
+        let userInfo;
 
         try {
-            userInfo = JSON.parse(await client.get(sessionId));
+            // Redis에서 사용자 정보 로드
+            const userData = await client.get(sessionid);
+            if (!userData) throw 'Session expired or invalid';
+            userInfo = JSON.parse(userData);
         } catch (error) {
             console.error('Redis 로드 실패:', error);
-            throw 'database(redis) error';
-        } 
+            return res.status(500).json({ error: 'Redis error' });
+        }
 
         try {
-            const res = await pgClient.query(`select * from scores where userid = '${userInfo.userid}';`);
-            console.log('score info:', res.rows[0]);
-            scoreInfo = res.rows[0];
+            // PostgreSQL에 사용자 점수 업데이트
+            await pgClient.query(
+                `INSERT INTO scores (userid, score) VALUES ($1, $2) 
+                ON CONFLICT (userid) DO UPDATE SET score = scores.score + $2`,
+                [userInfo.userid, cnt]
+            );
         } catch (error) {
             console.error('오류 발생:', error);
-            throw 'database(postgres) error';
-        } 
+            return res.status(500).json({ error: 'Database error' });
+        }
 
-        res.status(200).json(scoreInfo.score);
+        res.status(200).json({ message: 'Score updated successfully' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: '서버 에러' });
