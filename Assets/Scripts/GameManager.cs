@@ -84,6 +84,14 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            List<CommonDefine.serverPacket> packetList = new List<CommonDefine.serverPacket>();
+            CommonDefine.serverPacket packet = new CommonDefine.serverPacket("sessionId", UserInfo.instance.sessionid.sessionid);
+            CommonDefine.serverPacket packet2 = new CommonDefine.serverPacket("exp", "10");
+
+            packetList.Add(packet);
+            packetList.Add(packet2);
+
+            NetworkManager.instance.SendServer("kill", packetList);
             AfterCrashCharacterToMonster();
         }
     }

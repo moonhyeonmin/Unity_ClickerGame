@@ -49,13 +49,8 @@ public class SceneChange : MonoBehaviour
         string Strpwd = password.GetComponent<InputField>().text;
 
         List<CommonDefine.serverPacket> packetList = new List<CommonDefine.serverPacket>();
-        CommonDefine.serverPacket packet;
-        packet.packetType = "userid";
-        packet.packetValue = Strid;
-
-        CommonDefine.serverPacket packet2;
-        packet2.packetType = "userpwd";
-        packet2.packetValue = Strpwd;
+        CommonDefine.serverPacket packet = new CommonDefine.serverPacket("userid", Strid);
+        CommonDefine.serverPacket packet2 = new CommonDefine.serverPacket("userpwd", Strpwd);
 
         packetList.Add(packet);
         packetList.Add(packet2);

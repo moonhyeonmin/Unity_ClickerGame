@@ -10,8 +10,9 @@ public class NetworkManager : MonoBehaviour
     #region Singlenton
     private static NetworkManager _instance;
 
-    public static NetworkManager Instance
+    public static NetworkManager instance
     {
+
         get
         {
             if (_instance == null)
@@ -78,8 +79,26 @@ public class NetworkManager : MonoBehaviour
                 if(api == "login")
                 {
                     string uuid_text = www.downloadHandler.text;
-                    sessionid = JsonUtility.FromJson<UUID>(uuid_text);
+                    UserInfo.instance.sessionid = JsonUtility.FromJson<UUID>(uuid_text);
+
+                    for(int i = 0; i < packetList.Count; i++)
+                    {
+                        CommonDefine.serverPacket packet = packetList[i];
+                        if(packet.packetType == "userid")
+                        {
+                            UserInfo.instance.id = packet.packetValue;
+                        }
+                        else if(packet.packetType == "userpwd")
+                        {
+                            UserInfo.instance.password = packet.packetValue;
+                        }
+                    }
                     SceneManager.LoadScene("SampleScene");
+                }
+
+                else if(api == "kill")
+                {
+                    GameManager.instance.AfterCrashCharacterToMonster();
                 }
             }
         }
@@ -88,8 +107,4 @@ public class NetworkManager : MonoBehaviour
             Debug.Log("www error : "+www.error);
         }
     }
-}
-public class UUID
-{
-    public string sessionId;
 }
