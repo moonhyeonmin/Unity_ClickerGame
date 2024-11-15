@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -76,11 +77,26 @@ public class GameManager : MonoBehaviour
     }
     // 10번 anim.play("attack")를 실행하고, 그 후에는 anim.play("run")을 실행한다.
 
+    protected float curHealth;
+
+    public Slider HpBarSlider;
+    public void CheckHp()
+    {
+        if (HpBarSlider != null)
+            HpBarSlider.value = curHealth / monster.hp;
+    }
     public void AttackMonster()
     {
         if(monster.hp > 0)
         {
             monster.hp -= character.attack;
+            curHealth  -= 10;
+            CheckHp();
+            if (curHealth <= 0)
+            {
+                curHealth = 0;
+                // 죽음
+            }
         }
         else
         {
